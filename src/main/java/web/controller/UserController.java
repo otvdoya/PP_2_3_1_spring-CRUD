@@ -7,12 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import web.model.User;
 import web.service.UserService;
 
-
 @Controller
 @RequestMapping("/users")
 public class UserController {
-    @Autowired
+
     UserService userService;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping("")
     public String allUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
@@ -44,8 +48,8 @@ public class UserController {
     }
 
     @PatchMapping("/edit/{id}/post")
-    public String updateUser(@PathVariable("id") int id, @ModelAttribute("user") User user) {
-        userService.editUserById(user);
+    public String updateUser(@ModelAttribute("user") User user) {
+        userService.editUser(user);
         return "redirect:/users";
     }
 

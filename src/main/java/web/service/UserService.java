@@ -13,6 +13,6 @@ public interface UserService {
 
     void deleteUserById(int id);
 
-    void editUserById(User user);
+    void editUser(User user);
 
 }

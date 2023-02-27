@@ -15,6 +15,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
@@ -23,13 +24,17 @@ import java.util.Properties;
 @PropertySource("classpath:db.properties")
 public class DBConfig {
 
+    Environment env;
+
     @Autowired
-    private Environment env;
+    public DBConfig(Environment env) {
+        this.env = env;
+    }
 
     @Bean
     public DriverManagerDataSource dataSource(){
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("db.driver"));
+        dataSource.setDriverClassName(Objects.requireNonNull(env.getProperty("db.driver")));
         dataSource.setUrl(env.getProperty("db.url"));
         dataSource.setUsername(env.getProperty("db.username"));
         dataSource.setPassword(env.getProperty("db.password"));
@@ -40,7 +45,7 @@ public class DBConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource());
-        entityManagerFactoryBean.setPackagesToScan(new String[] {"web.model"});
+        entityManagerFactoryBean.setPackagesToScan("web.model");
 
         Properties properties = new Properties();
         properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
@@ -49,7 +54,7 @@ public class DBConfig {
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 
         entityManagerFactoryBean.setDataSource(dataSource());
-        entityManagerFactoryBean.setPackagesToScan(new String[]{"web.model"});
+        entityManagerFactoryBean.setPackagesToScan("web.model");
         entityManagerFactoryBean.setJpaProperties(properties);
 
         entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
